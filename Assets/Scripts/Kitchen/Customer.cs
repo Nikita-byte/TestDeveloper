@@ -82,5 +82,14 @@ namespace CookingPrototype.Kitchen {
 			_timer = Mathf.Max(0f, _timer - 6f);
 			return true;
 		}
+
+		[UsedImplicitly]
+		public bool CheckOrder(Order order) {
+			var place = OrderPlaces.Find(x => x.CurOrder == order);
+			if ( !place ) {
+				return false;
+			}
+			return true;
+		}
 	}
 }

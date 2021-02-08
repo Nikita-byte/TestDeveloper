@@ -116,6 +116,7 @@ namespace CookingPrototype.Controllers {
 			TotalCustomersGeneratedChanged?.Invoke();
 			 
 			GameplayController.Instance.OrdersTarget = totalOrders - 2;
+			GameplayController.Instance.StartGame();
 		}
 
 		/// <summary>
@@ -138,8 +139,32 @@ namespace CookingPrototype.Controllers {
 		/// </summary>
 		/// <param name="order">Заказ, который пытаемся отдать</param>
 		/// <returns>Флаг - результат, удалось ли успешно отдать заказ</returns>
-		public bool ServeOrder(Order order) {
-			throw  new NotImplementedException("ServeOrder: this feature is not implemented.");
+		public bool ServeOrder(Order order)
+		{
+			CustomerPlace customerWithMinWaitTime = null; 
+
+			foreach (CustomerPlace customerPlace in CustomerPlaces )
+			{
+				if ( customerPlace.CurCustomer != null && customerPlace.CurCustomer.CheckOrder(order) ) {
+					if ( customerWithMinWaitTime == null ) {
+						customerWithMinWaitTime = customerPlace;
+					}
+					else {
+						if ( customerWithMinWaitTime.CurCustomer.WaitTime > customerPlace.CurCustomer.WaitTime ) {
+							customerWithMinWaitTime = customerPlace;
+						}
+					}
+				}
+			}
+
+			if ( customerWithMinWaitTime == null ) {
+				return false;
+			}
+			customerWithMinWaitTime.CurCustomer.ServeOrder(order);
+			if ( customerWithMinWaitTime.CurCustomer.IsComplete ) {
+				customerWithMinWaitTime.Free();
+			}
+			return true;
 		}
 	}
 }

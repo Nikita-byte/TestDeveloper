@@ -14,6 +14,7 @@ namespace CookingPrototype.Controllers {
 		public GameObject TapBlock   = null;
 		public WinWindow  WinWindow  = null;
 		public LoseWindow LoseWindow = null;
+		public StartWindow StartWindow = null;
 
 
 		int _ordersTarget = 0;
@@ -35,6 +36,11 @@ namespace CookingPrototype.Controllers {
 				Debug.LogError("Another instance of GameplayController already exists");
 			}
 			Instance = this;
+		}
+
+		public void StartGame() {
+			Time.timeScale = 0f;
+			StartWindow.Show();
 		}
 
 		void OnDestroy() {
@@ -69,6 +75,7 @@ namespace CookingPrototype.Controllers {
 			TapBlock?.SetActive(false);
 			WinWindow?.Hide();
 			LoseWindow?.Hide();
+			StartWindow?.Hide();
 		}
 
 		[UsedImplicitly]
@@ -87,6 +94,15 @@ namespace CookingPrototype.Controllers {
 			Init();
 			CustomersController.Instance.Init();
 			HideWindows();
+
+			foreach ( var place in FindObjectsOfType<AbstractFoodPlace>() ) {
+				place.FreePlace();
+			}
+		}
+
+		public void Begin() {
+			HideWindows();
+			Time.timeScale = 1f;
 
 			foreach ( var place in FindObjectsOfType<AbstractFoodPlace>() ) {
 				place.FreePlace();
